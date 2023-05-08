@@ -1,0 +1,216 @@
+<html>
+  <head>
+  <title>Form Validation Project</title>
+  <link rel="icon" type="image/png" href="icons8-form-100.png">
+<style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-image:url("hero-bg.webp");
+      background-repeat:no-repeat;
+      background-size: cover;
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+  
+    #progress {
+      width: 400px;
+      height: 8px;
+      background-color: #ddd;
+      margin-bottom: 20px;
+      position: fixed;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+  
+    #progress-bar {
+      height: 100%;
+      background-color: #4CAF50;
+      width: 0;
+      transition: width 0.3s ease-in-out;
+    }
+  
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-top: 50px;
+      font-size: medium;
+      font-family: cursive;
+      position: relative;
+    }
+  
+    #progress-text {
+      position: absolute;
+      top: -80px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: cursive;
+      font-size: 12px;
+      color:orange;
+    }
+  
+    form {
+      width: 400px;
+      padding: 20px;
+      background-image: url('form-background.jpg');
+      background-repeat: no-repeat;
+      background-size: cover;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color:springgreen;
+    }
+  
+    h1 {
+      text-align: center;
+      color:white;
+      margin-top: 30px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color:crimson;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 8px;
+      border-radius: 3px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 14px;
+      margin-bottom: 10px;
+      color:lightskyblue;
+    }
+
+    input[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .error {
+      color: red;
+      margin-top: -10px;
+      margin-bottom: 10px;
+    }
+
+</style>
+</head>
+<body>
+  <div id="progress">
+    <div id="progress-bar"></div>
+  </div>
+  <h1>Form Validation <span id="progress-text">Progress: 0% Completed</span></h1>
+  <form id="myForm" onsubmit="validateForm(event)">
+    <label for="name">Full Name:</label>
+    <input type="text" id="name" name="name" required>
+    <label for="email">Email ID:</label>
+    <input type="email" id="email" name="email" required>
+    <label for="phone">Phone Number:</label>
+    <input type="tel" id="phone" name="phone" required>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+    <label for="confirm-password">Confirm Password:</label>
+    <input type="password" id="confirm-password" name="confirm-password" required>
+    <input type="submit" value="Submit">
+  </form>
+
+  <script>
+    function validateForm(event) {
+      event.preventDefault();
+  
+      var name = document.forms["myForm"]["name"].value;
+      var email = document.forms["myForm"]["email"].value;
+      var phone = document.forms["myForm"]["phone"].value;
+      var password = document.forms["myForm"]["password"].value;
+      var confirmPassword = document.forms["myForm"]["confirm-password"].value;
+  
+      var isValid = true;
+  
+      // Check if name field is empty or less than 5 characters
+      if (name === "" || name.length < 5) {
+        showError("Please enter a valid name (minimum 5 characters).");
+        isValid = false;
+      }
+  
+      // Check if email field is empty or does not contain @ symbol
+      if (email === "" || !email.includes("@")) {
+        showError("Please enter a valid email address.");
+        isValid = false;
+      }
+  
+      // Check if phone number is empty or not a 10-digit number or equal to 123456789
+      if (phone === "" || !/^\d{10}$/.test(phone) || phone === "123456789") {
+        showError("Please enter a valid 10-digit phone number.");
+        isValid = false;
+      }
+  
+      // Check if password is empty or less than 8 characters or equals 'password' or user's name
+      if (password === "" || password.length < 8 || password.toLowerCase() === "password" || password.toLowerCase() === name.toLowerCase()) {
+        showError("Please enter a strong password.");
+        isValid = false;
+      }
+  
+      // Check if confirm password matches password
+      if (confirmPassword !== password) {
+        showError("Passwords do not match.");
+        isValid = false;
+      }
+  
+      if (isValid) {
+        // Form validation successful, proceed with form submission or further actions
+        // For example, you can submit the form to a server using AJAX or perform additional operations here
+        alert("Form submitted successfully!");
+      }
+    }
+  
+    function showError(errorMessage) {
+      var errorElement = document.createElement("div");
+      errorElement.className = "error";
+      errorElement.innerText = errorMessage;
+  
+      var form = document.getElementById("myForm");
+      form.appendChild(errorElement);
+    }
+  
+    // Update progress bar and progress percentage based on the completion of form fields
+    var form = document.getElementById("myForm");
+    var progressBar = document.getElementById("progress-bar");
+    var progressText = document.getElementById("progress-text");
+    var inputFields = form.querySelectorAll("input");
+  
+    form.addEventListener("input", updateProgressBar);
+  
+    function updateProgressBar() {
+      var completedFields = 0;
+      var totalFields = inputFields.length;
+  
+      for (var i = 0; i < totalFields; i++) {
+        if (inputFields[i].value !== "") {
+          completedFields++;
+        }
+      }
+  
+      var progress = (completedFields / totalFields) * 100;
+      progressBar.style.width = progress + "%";
+      progressText.textContent = "Progress: " + Math.round(progress) + "% Completed";
+    }
+  </script>
+  </html>
